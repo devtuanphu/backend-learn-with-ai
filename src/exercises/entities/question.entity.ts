@@ -1,0 +1,57 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { Exercise } from './exercise.entity';
+import { QuestionOption } from './question-option.entity';
+import { UserAnswer } from '../../user-progress/entities/user-answer.entity';
+
+export enum QuestionType {
+  SINGLE = 'SINGLE',
+  MULTIPLE = 'MULTIPLE',
+  TEXT = 'TEXT',
+}
+
+@Entity('questions')
+export class Question {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  exerciseId: string;
+
+  @ManyToOne(() => Exercise, (e) => e.questions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'exerciseId' })
+  exercise: Exercise;
+
+  @Column()
+  orderIndex: number;
+
+  @Column({ type: 'text' })
+  content: string;
+
+  @Column({ type: 'enum', enum: QuestionType, default: QuestionType.SINGLE })
+  type: QuestionType;
+
+  @Column({ default: 12 })
+  correctPoints: number;
+
+  @Column({ default: 2 })
+  wrongPoints: number;
+
+  @Column({ default: 4 })
+  bonusPoints: number;
+
+  @Column({ type: 'jsonb', nullable: true })
+  aiRecognitionRules: Record<string, any>;
+
+  @OneToMany(() => QuestionOption, (o) => o.question, { cascade: true })
+  options: QuestionOption[];
+
+  @OneToMany(() => UserAnswer, (ua) => ua.question)
+  userAnswers: UserAnswer[];
+}
