@@ -7,8 +7,8 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../../auth/entities/user.entity';
-import { ChatMessage } from './chat-message.entity';
+import type { User } from '../../auth/entities/user.entity.js';
+import type { ChatMessage } from './chat-message.entity.js';
 
 export enum SessionStatus {
   ACTIVE = 'ACTIVE',
@@ -23,7 +23,7 @@ export class LearningSession {
   @Column()
   userId: string;
 
-  @ManyToOne(() => User, (u) => u.learningSessions)
+  @ManyToOne('User', 'learningSessions')
   @JoinColumn({ name: 'userId' })
   user: User;
 
@@ -46,6 +46,6 @@ export class LearningSession {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(() => ChatMessage, (cm) => cm.session, { cascade: true })
+  @OneToMany('ChatMessage', 'session', { cascade: true })
   messages: ChatMessage[];
 }

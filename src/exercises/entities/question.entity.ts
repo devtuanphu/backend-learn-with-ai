@@ -6,9 +6,9 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Exercise } from './exercise.entity';
-import { QuestionOption } from './question-option.entity';
-import { UserAnswer } from '../../user-progress/entities/user-answer.entity';
+import type { Exercise } from './exercise.entity.js';
+import type { QuestionOption } from './question-option.entity.js';
+import type { UserAnswer } from '../../user-progress/entities/user-answer.entity.js';
 
 export enum QuestionType {
   SINGLE = 'SINGLE',
@@ -24,7 +24,7 @@ export class Question {
   @Column()
   exerciseId: string;
 
-  @ManyToOne(() => Exercise, (e) => e.questions, { onDelete: 'CASCADE' })
+  @ManyToOne('Exercise', 'questions', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'exerciseId' })
   exercise: Exercise;
 
@@ -49,9 +49,9 @@ export class Question {
   @Column({ type: 'jsonb', nullable: true })
   aiRecognitionRules: Record<string, any>;
 
-  @OneToMany(() => QuestionOption, (o) => o.question, { cascade: true })
+  @OneToMany('QuestionOption', 'question', { cascade: true })
   options: QuestionOption[];
 
-  @OneToMany(() => UserAnswer, (ua) => ua.question)
+  @OneToMany('UserAnswer', 'question')
   userAnswers: UserAnswer[];
 }

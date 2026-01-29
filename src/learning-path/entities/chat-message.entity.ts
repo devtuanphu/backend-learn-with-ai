@@ -6,7 +6,7 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { LearningSession } from './learning-session.entity';
+import type { LearningSession } from './learning-session.entity.js';
 
 export enum MessageRole {
   USER = 'USER',
@@ -38,7 +38,7 @@ export class ChatMessage {
   @Column()
   sessionId: string;
 
-  @ManyToOne(() => LearningSession, (ls) => ls.messages, {
+  @ManyToOne('LearningSession', 'messages', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'sessionId' })

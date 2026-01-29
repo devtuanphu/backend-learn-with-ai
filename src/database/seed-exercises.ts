@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Exercise, ExerciseType } from '../exercises/entities/exercise.entity';
-import { Question, QuestionType } from '../exercises/entities/question.entity';
-import { QuestionOption } from '../exercises/entities/question-option.entity';
+import { Exercise, ExerciseType } from '../exercises/entities/exercise.entity.js';
+import { Question, QuestionType } from '../exercises/entities/question.entity.js';
+import { QuestionOption } from '../exercises/entities/question-option.entity.js';
 
 /**
  * Seed data cho 3 bài tập mẫu về phép nhân số thập phân

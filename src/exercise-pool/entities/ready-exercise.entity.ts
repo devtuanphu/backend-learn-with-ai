@@ -6,7 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../auth/entities/user.entity';
+import type { User } from '../../auth/entities/user.entity.js';
 
 export enum ReadyExerciseStatus {
   READY = 'READY',
@@ -78,7 +78,7 @@ export class ReadyExercise {
   @Column({ nullable: true })
   usedByUserId: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne('User', { nullable: true })
   @JoinColumn({ name: 'usedByUserId' })
   usedByUser: User;
 

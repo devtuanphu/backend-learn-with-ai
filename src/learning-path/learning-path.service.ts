@@ -9,18 +9,18 @@ import { Repository } from 'typeorm';
 import {
   LearningSession,
   SessionStatus,
-} from './entities/learning-session.entity';
+} from './entities/learning-session.entity.js';
 import {
   ChatMessage,
   MessageRole,
   PromptType,
-} from './entities/chat-message.entity';
-import { UserProgressService } from '../user-progress/user-progress.service';
-import { ExercisesService } from '../exercises/exercises.service';
-import { AiService } from '../ai/ai.service';
-import { ExerciseType, Exercise } from '../exercises/entities/exercise.entity';
-import { LearningPhase } from '../user-progress/entities/user-exercise.entity';
-import { ExercisePoolService } from '../exercise-pool/exercise-pool.service';
+} from './entities/chat-message.entity.js';
+import { UserProgressService } from '../user-progress/user-progress.service.js';
+import { ExercisesService } from '../exercises/exercises.service.js';
+import { AiService } from '../ai/ai.service.js';
+import { ExerciseType, Exercise } from '../exercises/entities/exercise.entity.js';
+import { LearningPhase } from '../user-progress/entities/user-exercise.entity.js';
+import { ExercisePoolService } from '../exercise-pool/exercise-pool.service.js';
 
 // Interface for question data from pool or AI
 interface QuestionData {

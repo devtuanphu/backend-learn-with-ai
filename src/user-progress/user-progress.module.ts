@@ -1,13 +1,13 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserProgressController } from './user-progress.controller';
-import { UserProgressService } from './user-progress.service';
-import { UserExercise } from './entities/user-exercise.entity';
-import { UserAnswer } from './entities/user-answer.entity';
-import { UserError } from './entities/user-error.entity';
-import { ExercisesModule } from '../exercises/exercises.module';
-import { AiModule } from '../ai/ai.module';
-import { ExercisePoolModule } from '../exercise-pool/exercise-pool.module';
+import { UserProgressController } from './user-progress.controller.js';
+import { UserProgressService } from './user-progress.service.js';
+import { UserExercise } from './entities/user-exercise.entity.js';
+import { UserAnswer } from './entities/user-answer.entity.js';
+import { UserError } from './entities/user-error.entity.js';
+import { ExercisesModule } from '../exercises/exercises.module.js';
+import { AiModule } from '../ai/ai.module.js';
+import { ExercisePoolModule } from '../exercise-pool/exercise-pool.module.js';
 
 @Module({
   imports: [

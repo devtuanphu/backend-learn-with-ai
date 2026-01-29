@@ -6,8 +6,8 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../../auth/entities/user.entity';
-import { UserAnswer } from './user-answer.entity';
+import type { User } from '../../auth/entities/user.entity.js';
+import type { UserAnswer } from './user-answer.entity.js';
 
 @Entity('user_errors')
 export class UserError {
@@ -17,14 +17,14 @@ export class UserError {
   @Column()
   userId: string;
 
-  @ManyToOne(() => User, (u) => u.userErrors)
+  @ManyToOne('User', 'userErrors')
   @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ nullable: true })
   userAnswerId: string;
 
-  @ManyToOne(() => UserAnswer, (ua) => ua.errors, {
+  @ManyToOne('UserAnswer', 'errors', {
     nullable: true,
     onDelete: 'SET NULL',
   })

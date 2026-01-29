@@ -7,9 +7,9 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../../auth/entities/user.entity';
-import { Exercise } from '../../exercises/entities/exercise.entity';
-import { UserAnswer } from './user-answer.entity';
+import type { User } from '../../auth/entities/user.entity.js';
+import type { Exercise } from '../../exercises/entities/exercise.entity.js';
+import type { UserAnswer } from './user-answer.entity.js';
 
 export enum UserExerciseStatus {
   IN_PROGRESS = 'IN_PROGRESS',
@@ -30,14 +30,14 @@ export class UserExercise {
   @Column()
   userId: string;
 
-  @ManyToOne(() => User, (u) => u.userExercises)
+  @ManyToOne('User', 'userExercises')
   @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column()
   exerciseId: string;
 
-  @ManyToOne(() => Exercise, (e) => e.userExercises)
+  @ManyToOne('Exercise', 'userExercises')
   @JoinColumn({ name: 'exerciseId' })
   exercise: Exercise;
 
@@ -63,6 +63,6 @@ export class UserExercise {
   @Column({ type: 'timestamp', nullable: true })
   completedAt: Date;
 
-  @OneToMany(() => UserAnswer, (ua) => ua.userExercise, { cascade: true })
+  @OneToMany('UserAnswer', 'userExercise', { cascade: true })
   userAnswers: UserAnswer[];
 }

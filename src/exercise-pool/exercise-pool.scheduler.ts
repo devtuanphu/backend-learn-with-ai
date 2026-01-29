@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ExercisePoolService } from './exercise-pool.service';
+import { ExercisePoolService } from './exercise-pool.service.js';
 
 @Injectable()
 export class ExercisePoolScheduler implements OnModuleInit {

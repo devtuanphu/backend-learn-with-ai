@@ -8,7 +8,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserProgressService } from './user-progress.service';
+import { UserProgressService } from './user-progress.service.js';
 
 @Controller('progress')
 @UseGuards(AuthGuard('jwt'))

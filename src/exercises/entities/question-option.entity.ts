@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Question } from './question.entity';
+import type { Question } from './question.entity.js';
 
 @Entity('question_options')
 export class QuestionOption {
@@ -15,7 +15,7 @@ export class QuestionOption {
   @Column()
   questionId: string;
 
-  @ManyToOne(() => Question, (q) => q.options, { onDelete: 'CASCADE' })
+  @ManyToOne('Question', 'options', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'questionId' })
   question: Question;
 

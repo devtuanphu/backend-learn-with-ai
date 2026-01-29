@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Exercise, ExerciseType } from './entities/exercise.entity';
-import { Question, QuestionType } from './entities/question.entity';
-import { QuestionOption } from './entities/question-option.entity';
+import { Exercise, ExerciseType } from './entities/exercise.entity.js';
+import { Question, QuestionType } from './entities/question.entity.js';
+import { QuestionOption } from './entities/question-option.entity.js';
 
 @Injectable()
 export class ExercisesService {

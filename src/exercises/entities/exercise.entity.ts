@@ -6,8 +6,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Question } from './question.entity';
-import { UserExercise } from '../../user-progress/entities/user-exercise.entity';
+import type { Question } from './question.entity.js';
+import type { UserExercise } from '../../user-progress/entities/user-exercise.entity.js';
 
 export enum ExerciseType {
   BASIC = 'BASIC',
@@ -45,9 +45,9 @@ export class Exercise {
   @JoinColumn({ name: 'generatedFromId' })
   generatedFrom: Exercise;
 
-  @OneToMany(() => Question, (q) => q.exercise, { cascade: true })
+  @OneToMany('Question', 'exercise', { cascade: true })
   questions: Question[];
 
-  @OneToMany(() => UserExercise, (ue) => ue.exercise)
+  @OneToMany('UserExercise', 'exercise')
   userExercises: UserExercise[];
 }

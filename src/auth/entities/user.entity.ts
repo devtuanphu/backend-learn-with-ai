@@ -5,10 +5,10 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserExercise } from '../../user-progress/entities/user-exercise.entity';
-import { UserAnswer } from '../../user-progress/entities/user-answer.entity';
-import { UserError } from '../../user-progress/entities/user-error.entity';
-import { LearningSession } from '../../learning-path/entities/learning-session.entity';
+import type { UserExercise } from '../../user-progress/entities/user-exercise.entity.js';
+import type { UserAnswer } from '../../user-progress/entities/user-answer.entity.js';
+import type { UserError } from '../../user-progress/entities/user-error.entity.js';
+import type { LearningSession } from '../../learning-path/entities/learning-session.entity.js';
 
 @Entity('users')
 export class User {
@@ -27,15 +27,15 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(() => UserExercise, (ue) => ue.user)
+  @OneToMany('UserExercise', 'user')
   userExercises: UserExercise[];
 
-  @OneToMany(() => UserAnswer, (ua) => ua.user)
+  @OneToMany('UserAnswer', 'user')
   userAnswers: UserAnswer[];
 
-  @OneToMany(() => UserError, (ue) => ue.user)
+  @OneToMany('UserError', 'user')
   userErrors: UserError[];
 
-  @OneToMany(() => LearningSession, (ls) => ls.user)
+  @OneToMany('LearningSession', 'user')
   learningSessions: LearningSession[];
 }

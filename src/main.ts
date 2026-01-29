@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 import { DataSource } from 'typeorm';
-import { seedExerciseTemplates } from './database/seeds/exercise-templates.seed';
+import { seedExerciseTemplates } from './database/seeds/exercise-templates.seed.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

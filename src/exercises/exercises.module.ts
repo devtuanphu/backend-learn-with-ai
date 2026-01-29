@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExercisesController } from './exercises.controller';
-import { ExercisesService } from './exercises.service';
-import { Exercise } from './entities/exercise.entity';
-import { Question } from './entities/question.entity';
-import { QuestionOption } from './entities/question-option.entity';
+import { ExercisesController } from './exercises.controller.js';
+import { ExercisesService } from './exercises.service.js';
+import { Exercise } from './entities/exercise.entity.js';
+import { Question } from './entities/question.entity.js';
+import { QuestionOption } from './entities/question-option.entity.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Exercise, Question, QuestionOption])],

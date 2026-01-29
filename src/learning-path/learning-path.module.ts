@@ -1,13 +1,13 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LearningPathController } from './learning-path.controller';
-import { LearningPathService } from './learning-path.service';
-import { LearningSession } from './entities/learning-session.entity';
-import { ChatMessage } from './entities/chat-message.entity';
-import { UserProgressModule } from '../user-progress/user-progress.module';
-import { ExercisesModule } from '../exercises/exercises.module';
-import { AiModule } from '../ai/ai.module';
-import { ExercisePoolModule } from '../exercise-pool/exercise-pool.module';
+import { LearningPathController } from './learning-path.controller.js';
+import { LearningPathService } from './learning-path.service.js';
+import { LearningSession } from './entities/learning-session.entity.js';
+import { ChatMessage } from './entities/chat-message.entity.js';
+import { UserProgressModule } from '../user-progress/user-progress.module.js';
+import { ExercisesModule } from '../exercises/exercises.module.js';
+import { AiModule } from '../ai/ai.module.js';
+import { ExercisePoolModule } from '../exercise-pool/exercise-pool.module.js';
 
 @Module({
   imports: [

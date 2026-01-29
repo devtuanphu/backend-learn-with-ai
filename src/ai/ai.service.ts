@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Exercise, ExerciseType } from '../exercises/entities/exercise.entity';
-import { UserError } from '../user-progress/entities/user-error.entity';
+import { OpenRouter } from '@openrouter/sdk';
+import {
+  Exercise,
+  ExerciseType,
+} from '../exercises/entities/exercise.entity.js';
+import { UserError } from '../user-progress/entities/user-error.entity.js';
 
 interface QuestionOption {
   content: string;
@@ -18,22 +21,41 @@ interface Question {
 }
 
 @Injectable()
-export class AiService {
+export class AiService implements OnModuleInit {
   private readonly logger = new Logger(AiService.name);
-  private genAI: GoogleGenerativeAI;
-  private model: ReturnType<GoogleGenerativeAI['getGenerativeModel']>;
+  private openRouter: OpenRouter | null = null;
+  private model: string;
+  private apiKey: string | undefined;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('GEMINI_API_KEY');
-    if (apiKey) {
-      this.genAI = new GoogleGenerativeAI(apiKey);
-      this.model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash-lite',
-      });
-      this.logger.log('Google Gemini configured with model: gemini-2.0-flash');
+    this.apiKey = this.configService.get<string>('OPENROUTER_API_KEY');
+    this.model =
+      this.configService.get<string>('OPENROUTER_MODEL') ||
+      'google/gemma-3-4b-it:free';
+  }
+
+  onModuleInit(): void {
+    if (this.apiKey) {
+      this.openRouter = new OpenRouter({ apiKey: this.apiKey });
+      this.logger.log(`OpenRouter configured with model: ${this.model}`);
     } else {
-      this.logger.warn('GEMINI_API_KEY không được cấu hình');
+      this.logger.warn('OPENROUTER_API_KEY không được cấu hình');
     }
+  }
+
+  private async chat(
+    messages: { role: 'user' | 'assistant'; content: string }[],
+  ): Promise<string> {
+    if (!this.openRouter) {
+      throw new Error('OpenRouter SDK not initialized');
+    }
+    const completion = await this.openRouter.chat.send({
+      model: this.model,
+      messages,
+      stream: false,
+    });
+    const content = completion.choices[0]?.message?.content;
+    return typeof content === 'string' ? content : '';
   }
 
   private formatQuestionForPrompt(q: Question, i: number): string {
@@ -101,8 +123,7 @@ export class AiService {
 ⚠️ CHỈ TRẢ VỀ JSON THUẦN TÚY.`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
+      const response = await this.chat([{ role: 'user', content: prompt }]);
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -149,8 +170,7 @@ Trả về JSON:
 CHỈ TRẢ VỀ JSON.`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
+      const response = await this.chat([{ role: 'user', content: prompt }]);
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -213,26 +233,22 @@ Quy tắc:
 CHỈ TRẢ VỀ JSON.`;
 
     try {
-      const chat = this.model.startChat({
-        history: [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          {
-            role: 'model',
-            parts: [
-              {
-                text: '{"message": "Tôi hiểu. Tôi sẽ hỗ trợ học sinh.", "evaluation": "unclear", "emotion": "idle"}',
-              },
-            ],
-          },
-          ...conversationHistory.map((m) => ({
-            role: m.role,
-            parts: [{ text: m.content }],
-          })),
-        ],
-      });
+      // Build messages array with history
+      const messages: { role: 'user' | 'assistant'; content: string }[] = [
+        { role: 'user', content: systemPrompt },
+        {
+          role: 'assistant',
+          content:
+            '{"message": "Tôi hiểu. Tôi sẽ hỗ trợ học sinh.", "evaluation": "unclear", "emotion": "idle"}',
+        },
+        ...conversationHistory.map((m) => ({
+          role: m.role === 'model' ? ('assistant' as const) : ('user' as const),
+          content: m.content,
+        })),
+        { role: 'user', content: studentMessage },
+      ];
 
-      const result = await chat.sendMessage(studentMessage);
-      const responseText = result.response.text();
+      const responseText = await this.chat(messages);
 
       try {
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -347,8 +363,7 @@ Trả về JSON:
 CHỈ TRẢ VỀ JSON.`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response.text();
+      const response = await this.chat([{ role: 'user', content: prompt }]);
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -385,8 +400,8 @@ Yêu cầu:
 Viết nhận xét trực tiếp (không dùng JSON).`;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      return result.response.text();
+      const response = await this.chat([{ role: 'user', content: prompt }]);
+      return response;
     } catch (error) {
       this.logger.error('Error generating feedback', error);
       throw error;

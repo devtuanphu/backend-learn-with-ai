@@ -2,9 +2,9 @@ import { DataSource } from 'typeorm';
 import {
   Exercise,
   ExerciseType,
-} from '../../exercises/entities/exercise.entity';
-import { Question } from '../../exercises/entities/question.entity';
-import { QuestionOption } from '../../exercises/entities/question-option.entity';
+} from '../../exercises/entities/exercise.entity.js';
+import { Question } from '../../exercises/entities/question.entity.js';
+import { QuestionOption } from '../../exercises/entities/question-option.entity.js';
 
 export async function seedExerciseTemplates(dataSource: DataSource) {
   const exerciseRepo = dataSource.getRepository(Exercise);

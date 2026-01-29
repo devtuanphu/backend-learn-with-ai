@@ -6,11 +6,11 @@ import {
   ReadyExerciseStatus,
   ReadyExerciseType,
   ERROR_PATTERNS,
-} from './entities/ready-exercise.entity';
-import { AiService } from '../ai/ai.service';
-import { ExercisesService } from '../exercises/exercises.service';
-import { ExerciseType } from '../exercises/entities/exercise.entity';
-import { UserError } from '../user-progress/entities/user-error.entity';
+} from './entities/ready-exercise.entity.js';
+import { AiService } from '../ai/ai.service.js';
+import { ExercisesService } from '../exercises/exercises.service.js';
+import { ExerciseType } from '../exercises/entities/exercise.entity.js';
+import { UserError } from '../user-progress/entities/user-error.entity.js';
 
 interface PoolStats {
   phase1: number;

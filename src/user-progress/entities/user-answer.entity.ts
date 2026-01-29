@@ -7,10 +7,10 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../../auth/entities/user.entity';
-import { UserExercise } from './user-exercise.entity';
-import { Question } from '../../exercises/entities/question.entity';
-import { UserError } from './user-error.entity';
+import type { User } from '../../auth/entities/user.entity.js';
+import type { UserExercise } from './user-exercise.entity.js';
+import type { Question } from '../../exercises/entities/question.entity.js';
+import type { UserError } from './user-error.entity.js';
 
 @Entity('user_answers')
 export class UserAnswer {
@@ -20,14 +20,14 @@ export class UserAnswer {
   @Column()
   userId: string;
 
-  @ManyToOne(() => User, (u) => u.userAnswers)
+  @ManyToOne('User', 'userAnswers')
   @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column()
   userExerciseId: string;
 
-  @ManyToOne(() => UserExercise, (ue) => ue.userAnswers, {
+  @ManyToOne('UserExercise', 'userAnswers', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userExerciseId' })
@@ -36,7 +36,7 @@ export class UserAnswer {
   @Column()
   questionId: string;
 
-  @ManyToOne(() => Question, (q) => q.userAnswers)
+  @ManyToOne('Question', 'userAnswers')
   @JoinColumn({ name: 'questionId' })
   question: Question;
 
@@ -58,6 +58,6 @@ export class UserAnswer {
   @CreateDateColumn()
   answeredAt: Date;
 
-  @OneToMany(() => UserError, (ue) => ue.userAnswer, { cascade: true })
+  @OneToMany('UserError', 'userAnswer', { cascade: true })
   errors: UserError[];
 }

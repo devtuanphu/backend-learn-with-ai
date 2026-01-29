@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ExercisesService } from './exercises.service';
-import { ExerciseType } from './entities/exercise.entity';
+import { ExercisesService } from './exercises.service.js';
+import { ExerciseType } from './entities/exercise.entity.js';
 
 @Controller('exercises')
 @UseGuards(AuthGuard('jwt'))

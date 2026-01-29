@@ -1,14 +1,14 @@
 import { DataSource } from 'typeorm';
-import { User } from '../auth/entities/user.entity';
-import { Exercise } from '../exercises/entities/exercise.entity';
-import { Question } from '../exercises/entities/question.entity';
-import { QuestionOption } from '../exercises/entities/question-option.entity';
-import { UserExercise } from '../user-progress/entities/user-exercise.entity';
-import { UserAnswer } from '../user-progress/entities/user-answer.entity';
-import { UserError } from '../user-progress/entities/user-error.entity';
-import { LearningSession } from '../learning-path/entities/learning-session.entity';
-import { ChatMessage } from '../learning-path/entities/chat-message.entity';
-import { seedExercises } from './seed-exercises';
+import { User } from '../auth/entities/user.entity.js';
+import { Exercise } from '../exercises/entities/exercise.entity.js';
+import { Question } from '../exercises/entities/question.entity.js';
+import { QuestionOption } from '../exercises/entities/question-option.entity.js';
+import { UserExercise } from '../user-progress/entities/user-exercise.entity.js';
+import { UserAnswer } from '../user-progress/entities/user-answer.entity.js';
+import { UserError } from '../user-progress/entities/user-error.entity.js';
+import { LearningSession } from '../learning-path/entities/learning-session.entity.js';
+import { ChatMessage } from '../learning-path/entities/chat-message.entity.js';
+import { seedExercises } from './seed-exercises.js';
 
 const dataSource = new DataSource({
   type: 'postgres',

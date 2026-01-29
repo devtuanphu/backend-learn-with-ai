@@ -8,7 +8,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LearningPathService } from './learning-path.service';
+import { LearningPathService } from './learning-path.service.js';
 
 @Controller('learning')
 @UseGuards(AuthGuard('jwt'))

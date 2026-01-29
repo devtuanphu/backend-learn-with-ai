@@ -10,15 +10,15 @@ import {
   UserExercise,
   UserExerciseStatus,
   LearningPhase,
-} from './entities/user-exercise.entity';
-import { UserAnswer } from './entities/user-answer.entity';
-import { UserError } from './entities/user-error.entity';
-import { ExercisesService } from '../exercises/exercises.service';
-import { AiService } from '../ai/ai.service';
-import { Question } from '../exercises/entities/question.entity';
-import { QuestionOption } from '../exercises/entities/question-option.entity';
-import { ExercisePoolService } from '../exercise-pool/exercise-pool.service';
-import { ExerciseType } from '../exercises/entities/exercise.entity';
+} from './entities/user-exercise.entity.js';
+import { UserAnswer } from './entities/user-answer.entity.js';
+import { UserError } from './entities/user-error.entity.js';
+import { ExercisesService } from '../exercises/exercises.service.js';
+import { AiService } from '../ai/ai.service.js';
+import { Question } from '../exercises/entities/question.entity.js';
+import { QuestionOption } from '../exercises/entities/question-option.entity.js';
+import { ExercisePoolService } from '../exercise-pool/exercise-pool.service.js';
+import { ExerciseType } from '../exercises/entities/exercise.entity.js';
 
 @Injectable()
 export class UserProgressService {
