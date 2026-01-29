@@ -280,30 +280,67 @@ export class ExercisePoolService {
   }
 
   /**
+   * Helper to add delay between requests
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
    * Kiểm tra và duy trì pool size
+   * Giới hạn số requests để tránh rate limit (free tier ~15 RPM)
    */
   async maintainPool(): Promise<void> {
     const stats = await this.getPoolStats();
     this.logger.log(`Pool stats: ${JSON.stringify(stats)}`);
 
-    // Maintain Phase 1
-    if (stats.phase1 < this.PHASE1_TARGET) {
-      const needed = this.PHASE1_TARGET - stats.phase1;
-      this.logger.log(`Phase 1 needs ${needed} more exercises`);
+    const DELAY_MS = 5000; // 5 giây giữa mỗi request
+    const MAX_REQUESTS_PER_CYCLE = 10; // Tối đa 10 requests mỗi lần maintain
+    let requestCount = 0;
 
-      for (let i = 0; i < Math.min(needed, 5); i++) {
+    // Maintain Phase 1
+    if (
+      stats.phase1 < this.PHASE1_TARGET &&
+      requestCount < MAX_REQUESTS_PER_CYCLE
+    ) {
+      const needed = Math.min(
+        this.PHASE1_TARGET - stats.phase1,
+        2, // Chỉ tạo 2 bài Phase 1 mỗi lần
+        MAX_REQUESTS_PER_CYCLE - requestCount,
+      );
+      this.logger.log(
+        `Phase 1 needs ${this.PHASE1_TARGET - stats.phase1} more, generating ${needed}`,
+      );
+
+      for (let i = 0; i < needed; i++) {
         await this.generatePhase1Exercise();
+        requestCount++;
+        if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+          await this.delay(DELAY_MS);
+        }
       }
     }
 
     // Maintain Phase 2
     for (const pattern of ERROR_PATTERNS) {
-      if (stats.phase2[pattern] < this.PHASE2_TARGET_PER_ERROR) {
-        const needed = this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern];
-        this.logger.log(`Phase 2 [${pattern}] needs ${needed} more exercises`);
+      if (requestCount >= MAX_REQUESTS_PER_CYCLE) break;
 
-        for (let i = 0; i < Math.min(needed, 3); i++) {
+      if (stats.phase2[pattern] < this.PHASE2_TARGET_PER_ERROR) {
+        const needed = Math.min(
+          this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern],
+          1, // Chỉ 1 bài mỗi pattern
+          MAX_REQUESTS_PER_CYCLE - requestCount,
+        );
+        this.logger.log(
+          `Phase 2 [${pattern}] needs ${this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern]} more, generating ${needed}`,
+        );
+
+        for (let i = 0; i < needed; i++) {
           await this.generatePhase2Exercise(pattern);
+          requestCount++;
+          if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+            await this.delay(DELAY_MS);
+          }
         }
       }
     }
@@ -316,12 +353,22 @@ export class ExercisePoolService {
     ];
 
     for (const combo of commonCombos) {
+      if (requestCount >= MAX_REQUESTS_PER_CYCLE) break;
+
       const key = combo.join('_');
       if ((stats.phase3[combo[0]] || 0) < this.PHASE3_TARGET_PER_ERROR) {
         this.logger.log(`Phase 3 [${key}] needs more exercises`);
         await this.generatePhase3Exercise(combo);
+        requestCount++;
+        if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+          await this.delay(DELAY_MS);
+        }
       }
     }
+
+    this.logger.log(
+      `Maintenance cycle completed with ${requestCount} API calls`,
+    );
   }
 
   private getErrorDescription(pattern: string): string {

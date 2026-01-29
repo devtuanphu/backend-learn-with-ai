@@ -197,22 +197,39 @@ let ExercisePoolService = ExercisePoolService_1 = class ExercisePoolService {
                 Object.values(phase3Stats).reduce((a, b) => a + b, 0),
         };
     }
+    delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
     async maintainPool() {
         const stats = await this.getPoolStats();
         this.logger.log(`Pool stats: ${JSON.stringify(stats)}`);
-        if (stats.phase1 < this.PHASE1_TARGET) {
-            const needed = this.PHASE1_TARGET - stats.phase1;
-            this.logger.log(`Phase 1 needs ${needed} more exercises`);
-            for (let i = 0; i < Math.min(needed, 5); i++) {
+        const DELAY_MS = 5000;
+        const MAX_REQUESTS_PER_CYCLE = 10;
+        let requestCount = 0;
+        if (stats.phase1 < this.PHASE1_TARGET &&
+            requestCount < MAX_REQUESTS_PER_CYCLE) {
+            const needed = Math.min(this.PHASE1_TARGET - stats.phase1, 2, MAX_REQUESTS_PER_CYCLE - requestCount);
+            this.logger.log(`Phase 1 needs ${this.PHASE1_TARGET - stats.phase1} more, generating ${needed}`);
+            for (let i = 0; i < needed; i++) {
                 await this.generatePhase1Exercise();
+                requestCount++;
+                if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+                    await this.delay(DELAY_MS);
+                }
             }
         }
         for (const pattern of ready_exercise_entity_1.ERROR_PATTERNS) {
+            if (requestCount >= MAX_REQUESTS_PER_CYCLE)
+                break;
             if (stats.phase2[pattern] < this.PHASE2_TARGET_PER_ERROR) {
-                const needed = this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern];
-                this.logger.log(`Phase 2 [${pattern}] needs ${needed} more exercises`);
-                for (let i = 0; i < Math.min(needed, 3); i++) {
+                const needed = Math.min(this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern], 1, MAX_REQUESTS_PER_CYCLE - requestCount);
+                this.logger.log(`Phase 2 [${pattern}] needs ${this.PHASE2_TARGET_PER_ERROR - stats.phase2[pattern]} more, generating ${needed}`);
+                for (let i = 0; i < needed; i++) {
                     await this.generatePhase2Exercise(pattern);
+                    requestCount++;
+                    if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+                        await this.delay(DELAY_MS);
+                    }
                 }
             }
         }
@@ -222,12 +239,19 @@ let ExercisePoolService = ExercisePoolService_1 = class ExercisePoolService {
             ['misunderstanding', 'unit_conversion'],
         ];
         for (const combo of commonCombos) {
+            if (requestCount >= MAX_REQUESTS_PER_CYCLE)
+                break;
             const key = combo.join('_');
             if ((stats.phase3[combo[0]] || 0) < this.PHASE3_TARGET_PER_ERROR) {
                 this.logger.log(`Phase 3 [${key}] needs more exercises`);
                 await this.generatePhase3Exercise(combo);
+                requestCount++;
+                if (requestCount < MAX_REQUESTS_PER_CYCLE) {
+                    await this.delay(DELAY_MS);
+                }
             }
         }
+        this.logger.log(`Maintenance cycle completed with ${requestCount} API calls`);
     }
     getErrorDescription(pattern) {
         const descriptions = {

@@ -28,6 +28,7 @@ export declare class ExercisePoolService {
     generatePhase2Exercise(errorPattern: string): Promise<ReadyExercise | null>;
     generatePhase3Exercise(errorPatterns: string[]): Promise<ReadyExercise | null>;
     getPoolStats(): Promise<PoolStats>;
+    private delay;
     maintainPool(): Promise<void>;
     private getErrorDescription;
 }

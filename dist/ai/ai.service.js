@@ -26,9 +26,9 @@ let AiService = AiService_1 = class AiService {
         if (apiKey) {
             this.genAI = new generative_ai_1.GoogleGenerativeAI(apiKey);
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.5-pro',
+                model: 'gemini-2.0-flash-lite',
             });
-            this.logger.log('Google Gemini configured with model: gemini-2.5-pro');
+            this.logger.log('Google Gemini configured with model: gemini-2.0-flash');
         }
         else {
             this.logger.warn('GEMINI_API_KEY không được cấu hình');
@@ -56,13 +56,12 @@ let AiService = AiService_1 = class AiService {
 - Chủ đề: Phép nhân số thập phân (VD: 2,5 × 3 = ?; 0,4 × 1,2 = ?)
 
 🌟 HÃY TỰ DO SÁNG TẠO:
-- Nghĩ ra BẤT KỲ ngữ cảnh nào hấp dẫn, gần gũi với học sinh lớp 5 (mua sắm, nấu ăn, thể thao, du lịch, game, khoa học, làm vườn, xây dựng, may vá, tiệc sinh nhật, trường học, câu lạc bộ, gia đình, bạn bè...)
-- Đặt tên nhân vật tự nhiên (An, Bình, Minh, Hoa, Mai, Nam, cô giáo, bác nông dân, đầu bếp, vận động viên...)
-- Sử dụng số thập phân thực tế (giá tiền: 12,5 nghìn đồng; khối lượng: 0,75 kg; khoảng cách: 3,2 km; thời gian: 1,5 giờ...)
-- Viết câu hỏi theo nhiều cách khác nhau (tính kết quả, so sánh, tìm số thiếu, kiểm tra đúng sai...)
+- Nghĩ ra BẤT KỲ ngữ cảnh nào hấp dẫn, gần gũi với học sinh lớp 5
+- Đặt tên nhân vật tự nhiên (An, Bình, Minh, Hoa, Mai, Nam...)
+- Sử dụng số thập phân thực tế
 
 📋 MỖI CÂU HỎI GỒM 4 ĐÁP ÁN (1 đúng, 3 sai):
-- Đáp án sai phải có LỖI CỤ THỂ (đặt sai dấu phẩy, tính nhầm, hiểu sai đề...)
+- Đáp án sai phải có LỖI CỤ THỂ
 - Ghi rõ errorType: "decimal_placement" | "calculation_error" | "misunderstanding" | "multiplication_error" | "division_error"
 - Ghi rõ errorDescription giải thích lỗi
 
@@ -108,7 +107,7 @@ Các loại lỗi có thể: ${errorTypes.join(', ')}
 Phân tích:
 1. Đúng/Sai?
 2. Nếu sai, lỗi thuộc loại nào?
-3. Nhận xét khích lệ phù hợp lứa tuổi (dùng ngôn ngữ thân thiện, gọi là "bạn")
+3. Nhận xét khích lệ phù hợp lứa tuổi
 
 Trả về JSON:
 {
@@ -135,10 +134,10 @@ CHỈ TRẢ VỀ JSON.`;
     }
     async scaffoldingChat(stepNumber, problem, studentMessage, errors, conversationHistory) {
         const stepDescriptions = {
-            1: 'Bài toán cho biết gì? Yêu cầu gì? Bạn hãy nêu yêu cầu của bài toán thành một câu hỏi toán học',
-            2: 'Để giải quyết được vấn đề, bạn sẽ thực hiện như thế nào? Hãy nêu thứ tự bước giải.',
+            1: 'Bài toán cho biết gì? Yêu cầu gì?',
+            2: 'Để giải quyết được vấn đề, bạn sẽ thực hiện như thế nào?',
             3: 'Hãy trình bày các lời giải của bạn nhé!',
-            4: 'Kết quả này có hợp lý không? Vì sao? Em có thể giải theo cách khác không?',
+            4: 'Kết quả này có hợp lý không? Vì sao?',
         };
         const errorSummary = errors.length > 0
             ? errors
@@ -151,32 +150,23 @@ Bước hiện tại: ${stepDescriptions[stepNumber]}
 
 ⚠️ LỖI SAI CỦA HỌC SINH TỪ LỘ TRÌNH TRƯỚC:
 ${errorSummary}
-→ Tập trung gợi ý để học sinh khắc phục các lỗi này!
 
 Bài toán hiện tại: ${problem}
 
-🎯 QUAN TRỌNG - ĐÁNH GIÁ CÂU TRẢ LỜI:
-Bạn PHẢI đánh giá câu trả lời của học sinh và trả về JSON với format:
+🎯 ĐÁNH GIÁ CÂU TRẢ LỜI - trả về JSON:
 {
-  "message": "Phản hồi thân thiện cho học sinh (tiếng Việt)",
+  "message": "Phản hồi thân thiện cho học sinh",
   "evaluation": "correct" | "incorrect" | "partial" | "unclear",
   "emotion": "celebrating" | "encouraging" | "thinking" | "happy" | "idle"
 }
 
-Quy tắc đánh giá:
-- "correct" + "celebrating": Câu trả lời hoàn toàn đúng, đầy đủ
-- "partial" + "happy": Đúng một phần, cần bổ sung
-- "incorrect" + "encouraging": Sai, chưa biết làm, cần sửa lại (TUYỆT ĐỐI KHÔNG dùng happy/celebrating)
-- "unclear" + "thinking": Không hiểu câu hỏi hoặc trả lời lan man (TUYỆT ĐỐI KHÔNG dùng happy/celebrating)
+Quy tắc:
+- "correct" + "celebrating": Đúng hoàn toàn
+- "partial" + "happy": Đúng một phần
+- "incorrect" + "encouraging": Sai (KHÔNG dùng happy/celebrating)
+- "unclear" + "thinking": Không rõ (KHÔNG dùng happy/celebrating)
 
-Hướng dẫn viết message:
-- Dùng ngôn ngữ đơn giản, thân thiện, gọi học sinh là "bạn"
-- GỢI MỞ, không cho đáp án trực tiếp
-- Khi HS mắc lỗi tương tự lỗi cũ → nhắc nhở cụ thể
-- Khích lệ: "Bạn làm rất đúng!", "Tiếp tục giữ vững phong độ nhé!"
-- Khi sai: "Bạn xem lại kĩ hơn nhé!", "Cùng suy nghĩ thêm một chút nào!"
-
-CHỈ TRẢ VỀ JSON, KHÔNG CÓ TEXT KHÁC.`;
+CHỈ TRẢ VỀ JSON.`;
         try {
             const chat = this.model.startChat({
                 history: [
@@ -185,7 +175,7 @@ CHỈ TRẢ VỀ JSON, KHÔNG CÓ TEXT KHÁC.`;
                         role: 'model',
                         parts: [
                             {
-                                text: '{"message": "Tôi hiểu. Tôi sẽ hỗ trợ học sinh theo quy trình scaffolding và trả về JSON đánh giá.", "evaluation": "unclear", "emotion": "idle"}',
+                                text: '{"message": "Tôi hiểu. Tôi sẽ hỗ trợ học sinh.", "evaluation": "unclear", "emotion": "idle"}',
                             },
                         ],
                     },
@@ -257,18 +247,15 @@ CHỈ TRẢ VỀ JSON, KHÔNG CÓ TEXT KHÁC.`;
             PROBLEM_SOLVING: 'Bài tập giải quyết vấn đề phức tạp',
             COMPREHENSIVE: 'Bài tập tổng hợp, vận dụng thực tiễn',
         };
-        const prompt = `Dựa trên các LỖI SAI của học sinh lớp 5 ở lộ trình trước, tạo bài tập phù hợp.
+        const prompt = `Dựa trên các LỖI SAI của học sinh lớp 5, tạo bài tập phù hợp.
 
-📋 DANH SÁCH LỖI SAI CỦA HỌC SINH:
+📋 DANH SÁCH LỖI SAI:
 ${errorSummary || 'Chưa có lỗi cụ thể, tạo bài tập về phép nhân số thập phân'}
 
-📌 YÊU CẦU TẠO BÀI TẬP:
+📌 YÊU CẦU:
 - Loại: ${typeDescriptions[exerciseType]}
-- Bài tập PHẢI tập trung vào các dạng toán mà HS hay mắc lỗi
-- Thiết kế để HS dễ mắc lại lỗi cũ → cơ hội sửa chữa
-- Độ khó phù hợp lớp 5
-- Có 3-4 câu hỏi
-- Mỗi câu có 4 đáp án (1 đúng, 3 sai với các loại lỗi khác nhau)
+- Tập trung vào dạng toán HS hay mắc lỗi
+- 3-4 câu hỏi, mỗi câu 4 đáp án
 
 Trả về JSON:
 {
@@ -310,10 +297,9 @@ ${answers.map((a, i) => `Câu ${i + 1}: ${a.isCorrect ? '✓ Đúng' : `✗ Sai 
 Yêu cầu:
 - Khen ngợi những điểm tốt
 - Nhẹ nhàng chỉ ra lỗi sai
-- Đưa ra lời khuyên cụ thể để cải thiện
+- Đưa ra lời khuyên cụ thể
 - Động viên học sinh
-- Sử dụng ngôn ngữ thân thiện, gọi là "bạn"
-- Kết thúc bằng lời khích lệ
+- Gọi là "bạn"
 
 Viết nhận xét trực tiếp (không dùng JSON).`;
         try {
